@@ -7,6 +7,12 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  logOutStart,
+  logOutSuccess,
+  logOutFailure,
 } from "../redux/user/userSlice";
 
 const Profile = () => {
@@ -42,6 +48,33 @@ const Profile = () => {
       console.log(error)
       toast.error(error.response.data.message);
     }
+  };
+
+  const handleDeleteUser = async () => {
+    dispatch(deleteUserStart());
+    try {
+      const response = await axios.delete(`/api/user/delete/${currentUser._id}`);
+      console.log(response)
+      dispatch(deleteUserSuccess());
+      toast.success(response.data.message);
+    } catch (error) {
+      dispatch(deleteUserFailure(error.response.data.message));
+      console.log(error)
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleLogOut = async () => {
+    dispatch(logOutStart());
+    try {
+      const response = await axios.get("/api/user/signout");
+      dispatch(logOutSuccess());
+    } catch (error) {
+      dispatch(logOutFailure(error.response.data.message));
+      console.log(error)
+      toast.error(error.response.data.message);
+    }
+
   };
 
   useEffect(() => {
@@ -99,8 +132,8 @@ const Profile = () => {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete account</span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete account</span>
+        <span onClick={handleLogOut} className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
       <span className="text-red-700 mt-5">{ error ? error: ''}</span>
     </div>

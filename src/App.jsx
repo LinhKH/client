@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
@@ -11,14 +12,16 @@ import PrivateRoute from "./components/PrivateRoute";
 import { Toaster } from "sonner";
 
 function App() {
+  const { currentUser } = useSelector((state) => state.user);
+  
   return (
     <BrowserRouter>
       <Toaster position="top-center" richColors />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/sign-in" element={currentUser ? <Navigate to={'/profile'} /> : <SignIn />} />
+        <Route path="/sign-up" element={currentUser ? <Navigate to={'/profile'} /> : <SignUp />} />
         <Route path="/about" element={<About />} />
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
