@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const CreateListing = () => {
   const [files, setFiles] = useState([]);
@@ -22,7 +23,8 @@ const CreateListing = () => {
     parking: false,
     furnished: false,
   });
-  console.log(files)
+  const navigate = useNavigate();
+
   const handleImageSubmit = async (e) => {
     e.preventDefault();
     if (files.length > 0 && files.length < 7) {
@@ -45,6 +47,7 @@ const CreateListing = () => {
         // console.log('Uploaded images:', imageUrls);
         setFormData({ ...formData, imageUrls });
         setUploading(false);
+        setFiles([]);
 
       } catch (error) {
         console.error('Error uploading images:', error);
@@ -58,10 +61,35 @@ const CreateListing = () => {
     }
   };
 
-  const deleteImage = (e,index) => {
+  const deleteImage = async (e,index) => {
     e.preventDefault();
-    const updatedImageUrls = formData.imageUrls.filter((url, i) => i !== index);
-    setFormData({ ...formData, imageUrls: updatedImageUrls });
+    const deleteImageUrl = formData.imageUrls[index];
+    const publicId = 'mern-estate/' + deleteImageUrl.split('/').slice(-1)[0].split('.')[0];
+    
+    try {
+      // uncomment when upload product environment
+
+      // delete image from cloudinary
+      // const username = import.meta.env.VITE_CLOUDINARY_API_KEY;
+      // const password = import.meta.env.VITE_CLOUDINARY_API_SECRET;
+      // const auth = `Basic ${btoa(`${username}:${password}`)}`;
+      // await axios.delete('https://api.cloudinary.com/v1_1/vision-viet-nam/resources/image/upload', {
+      //   headers: {
+      //     'Authorization': auth,
+      //   },
+      //   data: {
+      //     public_ids: publicId,
+      //   },
+      // });
+
+      const updatedImageUrls = formData.imageUrls.filter((url, i) => i !== index);
+      setFormData({ ...formData, imageUrls: updatedImageUrls });
+      toast.success('Image deleted successfully');
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      setImageUploadError('Error deleting image. Please try again.', error.response ? error.response.data : error.message);
+      toast.error('Error deleting image. Please try again.');
+    }
   };
 
   const handleChangeInput = (e) => {
@@ -96,6 +124,7 @@ const CreateListing = () => {
       });
       setLoading(false);
       toast.success(response.data.message);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       console.error(error);
       setError(error.message);
@@ -173,8 +202,8 @@ const CreateListing = () => {
           {
             formData.imageUrls.length > 0 && (
               formData.imageUrls.map((url, index) => (
-                <div className='flex justify-between items-center gap-2'>
-                  <img key={index} src={url} alt={`Image ${index + 1}`} className='w-20 h-20 object-contain rounded-lg' />
+                <div key={index} className='flex justify-between items-center gap-2'>
+                  <img src={url} alt={`Image ${index + 1}`} className='w-20 h-20 object-contain rounded-lg' />
                   <button onClick={(e) => deleteImage(e,index)} className='p-3 text-red-700 rounded-lg hover:opacity-95'>DELETE</button>
                 </div>
               ))
