@@ -124,7 +124,7 @@ const CreateListing = () => {
       });
       setLoading(false);
       toast.success(response.data.message);
-      navigate(`/listing/${data._id}`);
+      navigate(`/listing/${response.data.savedListing._id}`);
     } catch (error) {
       console.error(error);
       setError(error.message);

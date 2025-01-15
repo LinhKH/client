@@ -22,7 +22,7 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state?.user);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ const Profile = () => {
   const handleLogOut = async () => {
     dispatch(logOutStart());
     try {
-      const response = await axios.get("/api/user/signout");
+      const response = await axios.get("/api/auth/signout");
       dispatch(logOutSuccess());
     } catch (error) {
       dispatch(logOutFailure(error.response.data.message));
@@ -140,21 +140,21 @@ const Profile = () => {
           onChange={(e) => setImage(e.target.files[0])}
         />
         <img
-          onClick={() => fileRef.current.click()}
-          src={!image ? currentUser.avatar : URL.createObjectURL(image)}
+          onClick={() => fileRef?.current.click()}
+          src={!image ? currentUser?.avatar : URL.createObjectURL(image)}
           className="rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2"
           alt=""
         />
         <input
           onChange={(e) => setName(e.target.value)}
-          value={name}
+          value={name || ""}
           className="border p-3 rounded-lg"
           type="text"
           placeholder="Name"
         />
         <input
           onChange={(e) => setEmail(e.target.value)}
-          value={email}
+          value={email || ""}
           className="border p-3 rounded-lg"
           type="email"
           disabled
@@ -162,7 +162,7 @@ const Profile = () => {
         />
         <input
           onChange={(e) => setPassword(e.target.value)}
-          value={password}
+          value={password || ""}
           className="border p-3 rounded-lg"
           type="password"
           placeholder="Password"
@@ -201,7 +201,7 @@ const Profile = () => {
         {showListingsError ? "Error showing listings" : ""}
       </p>
 
-      {userListings && userListings.length > 0 ? (
+      {userListings && userListings.length > 0 && (
         <div className="flex flex-col gap-4">
           <h1 className="text-center mt-7 text-2xl font-semibold">
             Your Listings
@@ -239,7 +239,7 @@ const Profile = () => {
             </div>
           ))}
         </div>
-      ) : (<p className="text-center">No Listings</p>)}
+      )}
     </div>
   );
 };
