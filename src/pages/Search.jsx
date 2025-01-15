@@ -229,7 +229,7 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className="flex-auto">
+      <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Listing results:
         </h1>
